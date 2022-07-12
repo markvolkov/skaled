@@ -11,11 +11,11 @@ dev::h256 AmsterdamFixPatch::newStateRootForAll;
 const dev::Address magicAddress( dev::eth::toAddress("0xE8E4Ea98530Bfe86f841E258fd6F3FD5c210c68f") );
 
 /* Test net:
- * 0xd2ba743e9fef4 // rhythmic-tegmen -- 15713
- * 0x292a2c91ca6a3 // squeaking-nash --15596
- * 0x1c6fa7f59eeac // chubby-sadr --15479
- * 0x4b127e9c2f7de // tinkling-kaffaljidhma -- 15564
-*/
+ * 0xd2ba743e9fef4 // rhythmic-tegmen -- 6064
+ * 0x292a2c91ca6a3 // squeaking-nash --6216
+ * 0x1c6fa7f59eeac // chubby-sadr --6202
+ * 0x4b127e9c2f7de // tinkling-kaffaljidhma -- 5945
+ */
 
 //Main net:
 //    case 0xd2ba743e9fef4:
@@ -35,13 +35,13 @@ size_t AmsterdamFixPatch::lastGoodBlock( const ChainParams& _chainParams ) {
 
     switch( _chainParams.chainID ){
     case 0xd2ba743e9fef4:
-        return 1981742; // checked on http://18.130.254.6:10003 and http://88.99.209.96:10003
+        return 6064;
     case 0x292a2c91ca6a3:
-        return 1861279; // checked on http://185.144.83.169:10003 and http://95.217.227.165:10067
+        return 6216;
     case 0x1c6fa7f59eeac:
-        return 1854549; // checked on http://52.229.104.190:10003 and http://185.56.139.86:10003
+        return 6202;
     case 0x4b127e9c2f7de:
-        return 1989445; // cheked on http://54.39.184.192:10003 and http://52.147.206.214:10003
+        return 5945;
     default:
         assert( false && "lastGoodBlock requested in a non-affected schain!" );
     }// switch
