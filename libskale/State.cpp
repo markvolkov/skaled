@@ -552,6 +552,7 @@ u256 State::storage( Address const& _id, u256 const& _key ) const {
 
 void State::setStorage( Address const& _contract, u256 const& _key, u256 const& _value ) {
     dev::u256 _currentValue = storage( _contract, _key );
+    cnote << "Setting storage value for contract " << _contract.hex() << ".\nKey: " << _key.str() << ". Current value: " << _currentValue.str() << ". New value: " << _value.str() << '\n';
 
     m_changeLog.emplace_back( _contract, _key, _currentValue );
     m_cache[_contract].setStorage( _key, _value );

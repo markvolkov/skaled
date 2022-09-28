@@ -432,7 +432,7 @@ namespace eth {
 #define BREAK return;
 #define DEFAULT
 #define WHILE_CASES
-
+#define BAD_INSTRUCTION std::cout << __FILE__ << ' ' << __LINE__ << '\n'
 #else
 #error No opcode dispatch configured
 #endif

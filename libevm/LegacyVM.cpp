@@ -232,7 +232,7 @@ void LegacyVM::interpretCases() {
         CASE( CREATE2 ) {
             ON_OP();
             if ( !m_schedule->haveCreate2 )
-                throwBadInstruction();
+                { BAD_INSTRUCTION; throwBadInstruction();}
             if ( m_ext->staticCall )
                 throwDisallowedStateChange();
 
@@ -255,9 +255,9 @@ void LegacyVM::interpretCases() {
         CASE( CALLCODE ) {
             ON_OP();
             if ( m_OP == Instruction::DELEGATECALL && !m_schedule->haveDelegateCall )
-                throwBadInstruction();
+                { BAD_INSTRUCTION; throwBadInstruction();}
             if ( m_OP == Instruction::STATICCALL && !m_schedule->haveStaticCall )
-                throwBadInstruction();
+                { BAD_INSTRUCTION; throwBadInstruction();}
             if ( m_OP == Instruction::CALL && m_ext->staticCall && m_SP[2] != 0 )
                 throwDisallowedStateChange();
             m_bounce = &LegacyVM::caseCall;
@@ -280,7 +280,7 @@ void LegacyVM::interpretCases() {
         CASE( REVERT ) {
             // Pre-byzantium
             if ( !m_schedule->haveRevert )
-                throwBadInstruction();
+                { BAD_INSTRUCTION; throwBadInstruction();}
 
             ON_OP();
             m_copyMemSize = 0;
@@ -603,7 +603,7 @@ void LegacyVM::interpretCases() {
         CASE( SHL ) {
             // Pre-constantinople
             if ( !m_schedule->haveBitwiseShifting )
-                throwBadInstruction();
+                { BAD_INSTRUCTION; throwBadInstruction();}
 
             ON_OP();
             updateIOGas();
@@ -618,7 +618,7 @@ void LegacyVM::interpretCases() {
         CASE( SHR ) {
             // Pre-constantinople
             if ( !m_schedule->haveBitwiseShifting )
-                throwBadInstruction();
+                { BAD_INSTRUCTION; throwBadInstruction();}
 
             ON_OP();
             updateIOGas();
@@ -633,7 +633,7 @@ void LegacyVM::interpretCases() {
         CASE( SAR ) {
             // Pre-constantinople
             if ( !m_schedule->haveBitwiseShifting )
-                throwBadInstruction();
+                { BAD_INSTRUCTION; throwBadInstruction();}
 
             ON_OP();
             updateIOGas();
@@ -766,7 +766,7 @@ void LegacyVM::interpretCases() {
 #else
         CASE( JUMPTO ) CASE( JUMPIF ) CASE( JUMPV ) CASE( JUMPSUB ) CASE( JUMPSUBV )
             CASE( RETURNSUB ) CASE( BEGINSUB ) CASE( BEGINDATA ) CASE( GETLOCAL ) CASE( PUTLOCAL ) {
-            throwBadInstruction();
+            { BAD_INSTRUCTION; throwBadInstruction();}
         }
         CONTINUE
 #endif
@@ -1082,7 +1082,7 @@ void LegacyVM::interpretCases() {
         CASE( XPUT )
         CASE( XGET )
         CASE( XSWIZZLE )
-        CASE( XSHUFFLE ) { throwBadInstruction(); }
+        CASE( XSHUFFLE ) { { BAD_INSTRUCTION; throwBadInstruction();} }
         CONTINUE
 #endif
 
@@ -1159,7 +1159,7 @@ void LegacyVM::interpretCases() {
 
         CASE( RETURNDATASIZE ) {
             if ( !m_schedule->haveReturnData )
-                throwBadInstruction();
+                { BAD_INSTRUCTION; throwBadInstruction();}
 
             ON_OP();
             updateIOGas();
@@ -1198,7 +1198,7 @@ void LegacyVM::interpretCases() {
         CASE( RETURNDATACOPY ) {
             ON_OP();
             if ( !m_schedule->haveReturnData )
-                throwBadInstruction();
+                { BAD_INSTRUCTION; throwBadInstruction();}
             bigint const endOfAccess = bigint( m_SP[1] ) + bigint( m_SP[2] );
             if ( m_returnData.size() < endOfAccess )
                 throwBufferOverrun( endOfAccess );
@@ -1214,7 +1214,7 @@ void LegacyVM::interpretCases() {
         CASE( EXTCODEHASH ) {
             ON_OP();
             if ( !m_schedule->haveExtcodehash )
-                throwBadInstruction();
+                { BAD_INSTRUCTION; throwBadInstruction();}
 
             m_runGas = toInt63( m_schedule->extcodehashGas );
             updateIOGas();
@@ -1307,7 +1307,7 @@ void LegacyVM::interpretCases() {
             ON_OP();
 
             if ( !m_schedule->haveChainID )
-                throwBadInstruction();
+                { BAD_INSTRUCTION; throwBadInstruction();}
 
             updateIOGas();
 
@@ -1319,7 +1319,7 @@ void LegacyVM::interpretCases() {
             ON_OP();
 
             if ( !m_schedule->haveSelfbalance )
-                throwBadInstruction();
+                { BAD_INSTRUCTION; throwBadInstruction();}
 
             updateIOGas();
 
@@ -1350,7 +1350,7 @@ void LegacyVM::interpretCases() {
             m_SPP[0] = m_pool[off];
             TRACE_VAL( 2, "Retrieved pooled const", m_SPP[0] );
 #else
-            throwBadInstruction();
+            { BAD_INSTRUCTION; throwBadInstruction();}
 #endif
         }
         CONTINUE
@@ -1432,7 +1432,7 @@ void LegacyVM::interpretCases() {
 
             m_PC = uint64_t( m_SP[0] );
 #else
-            throwBadInstruction();
+            { BAD_INSTRUCTION; throwBadInstruction();}
 #endif
         }
         CONTINUE
@@ -1447,7 +1447,7 @@ void LegacyVM::interpretCases() {
             else
                 ++m_PC;
 #else
-            throwBadInstruction();
+            { BAD_INSTRUCTION; throwBadInstruction();}
 #endif
         }
         CONTINUE
@@ -1550,7 +1550,7 @@ void LegacyVM::interpretCases() {
         NEXT
 
         CASE( INVALID ) DEFAULT {
-            throwBadInstruction();
+            { BAD_INSTRUCTION; throwBadInstruction();}
         }
     }
     WHILE_CASES
