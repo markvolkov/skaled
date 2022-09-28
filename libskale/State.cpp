@@ -567,6 +567,7 @@ void State::setStorage( Address const& _contract, u256 const& _key, u256 const& 
 
     storageUsage[_contract] += count * 32;
     currentStorageUsed_ += count * 32;
+    cnote << "StorageUsed by contract: " << storageUsage[_contract] << ". Current TotalStorageUsed: " << currentStorageUsed_ << '\n';
 
     if ( totalStorageUsed_ + currentStorageUsed_ > contractStorageLimit_ ) {
         BOOST_THROW_EXCEPTION( dev::StorageOverflow() << errinfo_comment( _contract.hex() ) );
