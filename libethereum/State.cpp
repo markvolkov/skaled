@@ -22,12 +22,12 @@ using namespace dev;
 using namespace dev::eth;
 namespace fs = boost::filesystem;
 
-State::State(u256 const& _accountStartNonce, OverlayDB const& _db, BaseState _bs):
+State::State(u256 const& _accountStartNonce, OverlayDB const& _db, skale::BaseState _bs):
     m_db(_db),
     m_state(&m_db),
     m_accountStartNonce(_accountStartNonce)
 {
-    if (_bs != BaseState::PreExisting)
+    if (_bs != skale::BaseState::PreExisting)
         // Initialise to the state entailed by the genesis block; this guarantees the trie is built correctly.
         m_state.init();
 }
@@ -775,7 +775,7 @@ std::ostream& dev::eth::operator<<(std::ostream& _out, State const& _s)
 
 State& dev::eth::createIntermediateState(State& o_s, Block const& _block, unsigned _txIndex, BlockChain const& _bc)
 {
-  // o_s = _block.state().alethState();
+    o_s = _block.alethState();
     u256 const rootHash = _block.stateRootBeforeTx(_txIndex);
     if (rootHash)
         o_s.setRoot(rootHash);

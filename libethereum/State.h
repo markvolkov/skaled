@@ -16,8 +16,12 @@
 #include <libethcore/Exceptions.h>
 #include <libethereum/CodeSizeCache.h>
 #include <libevm/ExtVMFace.h>
+#include <libskale/BaseState.h>
 #include <array>
 #include <unordered_map>
+
+
+
 
 namespace dev
 {
@@ -50,11 +54,13 @@ class State;
 class TransactionQueue;
 struct VerifiedBlockRef;
 
+/*
 enum class BaseState
 {
     PreExisting,
     Empty
 };
+ */
 
 enum class Permanence
 {
@@ -152,17 +158,18 @@ public:
 
     using AddressMap = std::map<h256, Address>;
 
+
     /// Default constructor; creates with a blank database prepopulated with the genesis block.
-    explicit State(u256 const& _accountStartNonce): State(_accountStartNonce, OverlayDB(), BaseState::Empty) {}
+    explicit State(u256 const& _accountStartNonce): State(_accountStartNonce, OverlayDB(), skale::BaseState::Empty) {}
 
     /// Basic state object from database.
     /// Use the default when you already have a database and you just want to make a State object
     /// which uses it. If you have no preexisting database then set BaseState to something other
     /// than BaseState::PreExisting in order to prepopulate the Trie.
-    explicit State(u256 const& _accountStartNonce, OverlayDB const& _db, BaseState _bs = BaseState::PreExisting);
+    explicit State(u256 const& _accountStartNonce, OverlayDB const& _db, skale::BaseState _bs = skale::BaseState::PreExisting);
 
     enum NullType { Null };
-    State(NullType): State(Invalid256, OverlayDB(), BaseState::Empty) {}
+    State(NullType): State(Invalid256, OverlayDB(), skale::BaseState::Empty) {}
 
     /// Copy state object.
     State(State const& _s);
@@ -189,7 +196,8 @@ public:
 
     /// Execute a given transaction.
     /// This will change the state accordingly.
-    std::pair<ExecutionResult, TransactionReceipt> execute(EnvInfo const& _envInfo, SealEngineFace const& _sealEngine, Transaction const& _t, Permanence _p = Permanence::Committed, OnOpFunc const& _onOp = OnOpFunc());
+    std::pair<ExecutionResult, TransactionReceipt> execute(EnvInfo const& _envInfo, SealEngineFace const& _sealEngine,
+                                                           Transaction const& _t, Permanence _p = Permanence::Committed, OnOpFunc const& _onOp = OnOpFunc());
 
     /// Execute @a _txCount transactions of a given block.
     /// This will change the state accordingly.

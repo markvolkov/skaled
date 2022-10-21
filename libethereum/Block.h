@@ -34,6 +34,7 @@
 #include <libethcore/ChainOperationParams.h>
 #include <libethcore/Counter.h>
 #include <libethcore/Exceptions.h>
+#include <libethereum/State.h>
 #include <libskale/State.h>
 
 #include "Account.h"
@@ -84,7 +85,11 @@ public:
 
     /// Default constructor; creates with a blank database prepopulated with the genesis block.
     Block( u256 const& _accountStartNonce )
-        : m_state( _accountStartNonce ), m_precommit( _accountStartNonce ) {}
+        : m_state( _accountStartNonce ),
+#ifndef NO_ALETH_STATE
+        m_alethState(_accountStartNonce),
+#endif
+        m_precommit( _accountStartNonce ) {}
 
     /// Basic state object from database.
     /// Use the default when you already have a database and you just want to make a Block object
@@ -95,10 +100,17 @@ public:
         skale::BaseState _bs = skale::BaseState::PreExisting, Address const& _author = Address() );
 
     Block( BlockChain const& _bc, h256 const& _hash, skale::State const& _state,
+#ifndef NO_ALETH_STATE
+        dev::eth::State _alethState,
+#endif
         skale::BaseState _bs = skale::BaseState::PreExisting, Address const& _author = Address() );
 
     enum NullType { Null };
-    Block( NullType ) : m_state( 0 ), m_precommit( 0 ) {}
+    Block( NullType ) : m_state( 0 ),
+#ifndef NO_ALETH_STATE
+    m_alethState( 0 ),
+#endif
+    m_precommit( 0 ) {}
 
     /// Construct from a given blockchain. Empty, but associated with @a _bc 's chain params.
     explicit Block( BlockChain const& _bc ) : Block( Null ) { noteChain( _bc ); }
@@ -166,6 +178,10 @@ public:
     /// Get the backing state object.
     skale::State const& state() const { return m_state; }
 
+#ifndef NO_ALETH_STATE
+        dev::eth::State const& alethState() const { return m_alethState; }
+#endif
+
     // For altering accounts behind-the-scenes
 
     /// Get a mutable State object which is backing this block.
@@ -225,7 +241,11 @@ public:
     /// transaction queue.
     bool sync( BlockChain const& _bc );
 
-    bool sync( BlockChain const& _bc, skale::State const& _state );
+    bool sync( BlockChain const& _bc, skale::State const& _state,
+#ifndef NO_ALETH_STATE
+               dev::eth::State const& _alethState
+#endif
+     );
 
     /// Sync with the block chain, but rather than synching to the latest block, instead sync to the
     /// given block.
@@ -314,6 +334,9 @@ private:
     void updateBlockhashContract();
 
     skale::State m_state;         ///< Our state.
+#ifndef NO_ALETH_STATE
+    dev::eth::State m_alethState; /// Aleth state
+#endif
     Transactions m_transactions;  ///< The current list of transactions that we've included in the
                                   ///< state.
     TransactionReceipts m_receipts;  ///< The corresponding list of transaction receipts.

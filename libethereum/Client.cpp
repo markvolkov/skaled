@@ -54,7 +54,6 @@ using namespace dev::eth;
 namespace fs = boost::filesystem;
 using skale::BaseState;
 using skale::Permanence;
-using skale::State;
 using namespace skale::error;
 
 static_assert( BOOST_VERSION >= 106400, "Wrong boost headers version" );
@@ -218,7 +217,7 @@ void Client::init( WithExisting _forceAction, u256 _networkId ) {
     // Cannot be opened until after blockchain is open, since BlockChain may upgrade the database.
     // TODO: consider returning the upgrade mechanism here. will delaying the opening of the
     // blockchain database until after the construction.
-    m_state = State( chainParams().accountStartNonce, m_dbPath, bc().genesisHash(),
+    m_state = skale::State( chainParams().accountStartNonce, m_dbPath, bc().genesisHash(),
         BaseState::PreExisting, chainParams().accountInitialFunds,
         chainParams().sChain.contractStorageLimit );
 
@@ -1192,7 +1191,7 @@ h256 Client::importTransaction( Transaction const& _t ) {
     const_cast< Transaction& >( _t ).checkOutExternalGas( chainParams().externalGasDifficulty );
 
     // throws in case of error
-    State state;
+    skale::State state;
     u256 gasBidPrice;
 
     DEV_GUARDED( m_blockImportMutex ) {
@@ -1239,7 +1238,7 @@ ExecutionResult Client::call( Address const& _from, u256 _value, Address _dest, 
     try {
         Block temp = latestBlock();
         // TODO there can be race conditions between prev and next line!
-        State readStateForLock = temp.mutableState().startRead();
+        skale::State readStateForLock = temp.mutableState().startRead();
         u256 nonce = max< u256 >( temp.transactionsFrom( _from ), m_tq.maxNonce( _from ) );
         u256 gas = _gas == Invalid256 ? gasLimitRemaining() : _gas;
         u256 gasPrice = _gasPrice == Invalid256 ? gasBidPrice() : _gasPrice;
